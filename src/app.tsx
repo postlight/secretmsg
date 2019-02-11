@@ -16,12 +16,13 @@ export function htmlString(path: string) {
   return renderToString(<Root store={store} />);
 }
 
-export function page(content: string) {
+export function page(content: string, clientHash?: string) {
+  const hash = clientHash ? `.${clientHash}` : "";
   return `<html>
   <head>
     <title>secretmsg</title>
-    <script src="/js/client.js" defer></script>
-    <link rel="stylesheet" type="text/css" href="/css/tachyons.min.css">
+    <script src="/assets/js/client${hash}.js" defer></script>
+    <link rel="stylesheet" type="text/css" href="/assets/css/tachyons.4.11.2.min.css">
   </head>
   <body>${content}</body>
 </html>`;
