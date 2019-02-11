@@ -4,9 +4,10 @@
   "description": "shhh... it's a secret",
   "main": "index.js",
   "scripts": {
-    "build": "npm-run-all --parallel build:*",
-    "build:client": "parcel build src/client.ts",
-    "build:worker": "parcel build src/worker.ts",
+    "build": "npm-run-all --silent --parallel build:*",
+    "build:client": "parcel build --log-level 1 src/client.ts",
+    "build:worker": "parcel build --log-level 1 src/worker.ts",
+    "deploy": "./deploy.sh",
     "dev": "npm-run-all dev:server-bundle --parallel dev:client-bundle dev:server",
     "dev:server": "node server.js",
     "dev:server-bundle": "parcel build --no-minify -t node src/app.tsx",

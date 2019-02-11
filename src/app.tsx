@@ -7,7 +7,8 @@ import { Root } from "./components/root";
 export function run(path: string) {
   const route = initRouter(path);
   const store = initStore({ page: route.page, pageId: route.id });
-  render(<Root store={store} />, document.body);
+  render(<Root store={store} />, document.body, document.body
+    .firstElementChild as Element | undefined);
 }
 
 export function htmlString(path: string) {
