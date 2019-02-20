@@ -5,13 +5,13 @@
   "main": "index.js",
   "scripts": {
     "build": "npm-run-all --silent --parallel build:*",
-    "build:client": "parcel build --log-level 1 src/client.ts",
-    "build:worker": "parcel build --log-level 1 src/worker.ts",
+    "build:client": "parcel build --log-level 1 --public-url /assets/js src/client.ts",
+    "build:worker": "parcel build --log-level 1 --no-source-maps src/worker.ts",
     "deploy": "./deploy.sh",
     "dev": "npm-run-all --parallel dev:worker-bundle dev:client-bundle dev:server",
     "dev:server": "node server.js",
-    "dev:worker-bundle": "parcel watch src/worker.ts",
-    "dev:client-bundle": "parcel watch src/client.ts"
+    "dev:worker-bundle": "parcel watch --no-source-maps src/worker.ts",
+    "dev:client-bundle": "parcel watch --public-url /assets/js src/client.ts"
   },
   "keywords": [],
   "author": "",
