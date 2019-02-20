@@ -8,25 +8,30 @@
     "build:client": "parcel build --log-level 1 src/client.ts",
     "build:worker": "parcel build --log-level 1 src/worker.ts",
     "deploy": "./deploy.sh",
-    "dev": "npm-run-all dev:server-bundle --parallel dev:client-bundle dev:server",
+    "dev": "npm-run-all --parallel dev:worker-bundle dev:client-bundle dev:server",
     "dev:server": "node server.js",
-    "dev:server-bundle": "parcel build --no-minify -t node src/app.tsx",
+    "dev:worker-bundle": "parcel watch src/worker.ts",
     "dev:client-bundle": "parcel watch src/client.ts"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "hashids": "1.2.2",
     "preact": "8.4.2",
     "preact-render-to-string": "4.1.0",
     "route-recognizer": "0.3.4",
     "unistore": "3.2.1"
   },
   "devDependencies": {
+    "@dollarshaveclub/cloudworker": "0.0.10",
+    "@types/hashids": "1.0.30",
     "fastify": "1.14.1",
     "fastify-static": "1.1.0",
+    "form-data": "2.3.3",
     "npm-run-all": "4.1.5",
     "parcel-bundler": "1.11.0",
+    "raw-body": "2.3.3",
     "typescript": "3.3.3"
   }
 }
