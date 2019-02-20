@@ -1,10 +1,15 @@
+const fs = require("fs");
+const path = require("path");
+const http = require("http");
+const getRawBody = require("raw-body");
+const fastify = require("fastify");
+const fastifyStatic = require("fastify-static");
+const Cloudworker = require("@dollarshaveclub/cloudworker");
+
 // ------------------
 // Static file server
 // Worker needs to fetch static assets. In production they come from an
 // s3 bucket. Locally this server is the origin.
-const fastify = require("fastify");
-const fastifyStatic = require("fastify-static");
-
 const staticPort = 3333;
 const f = fastify();
 f.register(fastifyStatic, { root: __dirname, serve: false });
@@ -12,7 +17,11 @@ f.get("/assets/css/*", (req, reply) => {
   reply.sendFile(path.join("css", path.basename(req.raw.url)));
 });
 f.get("/assets/js/*", (req, reply) => {
-  reply.sendFile(path.join("dist", path.basename(req.raw.url)));
+  // check if file is vendored before trying to serve built dist files
+  const root = fs.existsSync(path.join("js", path.basename(req.raw.url)))
+    ? "js"
+    : "dist";
+  reply.sendFile(path.join(root, path.basename(req.raw.url)));
 });
 f.listen(staticPort, (err, address) => {
   if (err) throw err;
@@ -22,18 +31,13 @@ f.listen(staticPort, (err, address) => {
 // Local worker
 // Requests are handled by a simple http server then passed into the worker,
 // processed, and passed back out.
-const fs = require("fs");
-const path = require("path");
-const http = require("http");
-const getRawBody = require("raw-body");
-const Cloudworker = require("@dollarshaveclub/cloudworker");
+const workerPort = 3030;
 
 // Bindings are global variables available in the worker script
 const bindings = {
   CLIENT_HASH: null,
   MSG_STORE: new Cloudworker.KeyValueStore()
 };
-const workerPort = 3030;
 
 const server = http.createServer((req, res) => {
   const script = fs.readFileSync(path.join("dist", "worker.js"), "utf8");

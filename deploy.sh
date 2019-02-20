@@ -19,6 +19,7 @@ hash () {
 # prep assets
 rm -rf .tmp
 hash "dist" "client.js"
+cp -r  js/ "${TMP}/js/"
 cp -r css/ "${TMP}/css/"
 
 # push assets to s3
