@@ -20,7 +20,6 @@
     "hashids": "1.2.2",
     "preact": "8.4.2",
     "preact-render-to-string": "4.1.0",
-    "route-recognizer": "0.3.4",
     "unistore": "3.2.1"
   },
   "devDependencies": {

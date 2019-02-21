@@ -8,13 +8,13 @@ interface Props {
   onExpireChange: (update: number) => void;
 }
 
-export const SaveOverlay: FunctionalComponent<Props> = ({
+export const EncryptInputs: FunctionalComponent<Props> = ({
   passphrase,
   expiration,
   onPassChange,
   onExpireChange
 }) => (
-  <div class="absolute absolute--fill bg-black-20 flex items-center justify-center">
+  <div class="flex items-center justify-center">
     <UnlockIcon scale={1.6} class="mr3" />
     <div class="flex w-50 flex-wrap">
       <div class="mb2 w-100">
@@ -42,7 +42,8 @@ export const SaveOverlay: FunctionalComponent<Props> = ({
       </select>
       <div class="flex-auto flex justify-end">
         <input
-          class="db ml-auto pv2 ph3 button-reset bn br2 bg-black hover-bg-white white hover-black fw5 f6"
+          class="db ml-auto pv2 ph3 bn br2 bg-black hover-bg-white white hover-black fw5 f6"
+          disabled={passphrase.length < 2}
           type="submit"
           value="Save"
         />

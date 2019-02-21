@@ -19,7 +19,6 @@ const Content = connect<{}, {}, SecretState, SecretState>(["page", "pageId"])(
   ({ page, pageId }) => {
     const routes = {
       [Page.Write]: <Write />,
-      [Page.Share]: <div>share {pageId}</div>,
       [Page.View]: <div>share {pageId}</div>,
       [Page.NotFound]: <div>not found</div>
     };

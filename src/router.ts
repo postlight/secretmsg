@@ -1,41 +1,48 @@
-import RouteRecognizer from "route-recognizer";
+import { SecretState } from "./store";
+import { KeyValueStore } from "./worker";
+import { getMessage } from "./kv";
 
 export enum Page {
   Write = "WRITE",
-  Share = "SHARE",
   View = "VIEW",
   NotFound = "NOTFOUND"
 }
 
 interface Route {
-  page: Page;
-  id?: string;
+  status: number;
+  data: Pick<SecretState, "page" | "pageId" | "envelope">;
 }
 
-export class Router {
-  private matcher: RouteRecognizer;
-
-  constructor() {
-    this.matcher = new RouteRecognizer();
-    this.matcher.add([{ path: "/", handler: Page.Write }]);
-    this.matcher.add([{ path: "/:id/share", handler: Page.Share }]);
-    this.matcher.add([{ path: "/:id", handler: Page.View }]);
-  }
-
-  match(path: string): Route {
-    const results = this.matcher.recognize(path);
-    if (results == null) {
-      return { page: Page.NotFound };
+export async function route(path: string, kv: KeyValueStore): Promise<Route> {
+  const segment = path.split("/");
+  if (segment[1] && segment[1].length > 0) {
+    // View /:id
+    const envelope = await getMessage(kv, segment[1]);
+    if (envelope != null) {
+      return {
+        status: 200,
+        data: {
+          page: Page.View,
+          pageId: segment[1],
+          envelope
+        }
+      };
     }
-    const result = results[0];
-    if (result == null) {
-      return { page: Page.NotFound };
-    }
-    // TODO: handler needs to fetch data (if no data, return 404 notFound)
-    // TODO: also need a way to return status code
+    // No message found
     return {
-      page: result.handler as Page,
-      id: result.params.id as string
+      status: 404,
+      data: { page: Page.NotFound }
+    };
+  } else if (segment[1] == "") {
+    // Home /
+    return {
+      status: 200,
+      data: { page: Page.Write }
     };
   }
+
+  return {
+    status: 404,
+    data: { page: Page.NotFound }
+  };
 }

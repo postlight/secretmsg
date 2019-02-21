@@ -1,4 +1,5 @@
-import { htmlString, page } from "./app";
+import { htmlString } from "./app";
+import { page } from "./page";
 
 addEventListener("fetch", (e: Event) => {
   const fe = (<FetchEvent>e).request ? (e as FetchEvent) : null;
@@ -21,7 +22,8 @@ async function handleRequest(req: Request) {
     segments[1] &&
     segments[2] &&
     segments[1] === "save" &&
-    req.method === "POST"
+    req.method === "POST" &&
+    MSG_STORE != null
   ) {
     const key = segments[2];
     try {
@@ -34,8 +36,12 @@ async function handleRequest(req: Request) {
   }
 
   // If not, render page
-  return new Response(page(htmlString(url.pathname), CLIENT_HASH), {
-    status: 200,
+  if (MSG_STORE == null) {
+    return new Response("No KV store bound to worker", { status: 500 });
+  }
+  const { status, data, html } = await htmlString(url.pathname, MSG_STORE);
+  return new Response(page(html, JSON.stringify(data), CLIENT_HASH), {
+    status,
     headers: {
       "content-type": "text/html; charset=utf-8"
     }
@@ -43,9 +49,9 @@ async function handleRequest(req: Request) {
 }
 
 declare const CLIENT_HASH: string | undefined;
-declare const MSG_STORE: KeyValueStore;
+declare const MSG_STORE: KeyValueStore | undefined;
 type ValidType = "text" | "json" | "arrayBuffer" | "stream";
-declare class KeyValueStore {
+export declare class KeyValueStore {
   constructor();
   get(
     key: string,

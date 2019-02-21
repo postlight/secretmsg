@@ -1,33 +1,22 @@
 import { h, render } from "preact";
 import { render as renderToString } from "preact-render-to-string";
 import { initStore } from "./store";
-import { Router } from "./router";
+import { route } from "./router";
+import { KeyValueStore } from "./worker";
 import { Root } from "./components/root";
 
 export function run(path: string) {
-  const router = new Router();
-  const route = router.match(path);
-  const store = initStore({ page: route.page, pageId: route.id });
-  render(<Root store={store} />, document.body, document.body
-    .firstElementChild as Element | undefined);
+  const node = document.getElementById("bootstrap");
+  if (node && node.textContent) {
+    const data = JSON.parse(node.textContent);
+    const store = initStore(data);
+    render(<Root store={store} />, document.body, document.body
+      .firstElementChild as Element | undefined);
+  }
 }
 
-export function htmlString(path: string) {
-  const router = new Router();
-  const route = router.match(path);
-  const store = initStore({ page: route.page, pageId: route.id });
-  return renderToString(<Root store={store} />);
-}
-
-export function page(content: string, clientHash?: string) {
-  const hash = clientHash ? `.${clientHash}` : "";
-  return `<html>
-  <head>
-    <title>secretmsg</title>
-    <script src="/assets/js/triplesec-3.0.27-min.js" defer></script>
-    <script src="/assets/js/client${hash}.js" defer></script>
-    <link rel="stylesheet" type="text/css" href="/assets/css/tachyons.4.11.2.min.css">
-  </head>
-  <body class="flex">${content}</body>
-</html>`;
+export async function htmlString(path: string, kv: KeyValueStore) {
+  const { status, data } = await route(path, kv);
+  const store = initStore(data);
+  return { status, data, html: renderToString(<Root store={store} />) };
 }

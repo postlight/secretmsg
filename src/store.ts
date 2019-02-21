@@ -2,16 +2,18 @@ import createStore, { Store } from "unistore";
 import Hashids from "hashids";
 import { Page } from "./router";
 import { encrypt } from "./crypto";
-import { writeKv } from "./kv";
+import { writeVal } from "./kv";
 
 export interface SecretState {
   page: Page;
   pageId?: string;
   envelope?: MsgEnvelope;
   progress: number;
+  saveError?: string;
 }
 
-interface MsgEnvelope {
+export interface MsgEnvelope {
+  created: number;
   encrypted: string;
   expires: number;
   id: string;
@@ -27,8 +29,6 @@ export function initStore(state: Partial<SecretState>) {
   return store;
 }
 
-export type PageUpdater = (page: Page, id?: string) => Partial<SecretState>;
-
 export type MsgSaver = (
   message: string,
   passphrase: string,
@@ -36,18 +36,14 @@ export type MsgSaver = (
 ) => Promise<Partial<SecretState>>;
 
 interface Actions {
-  updatePage: PageUpdater;
   saveMessage: MsgSaver;
+  clearMessage: () => void;
 }
 
 const hashids = new Hashids(`${Math.random()}`);
 
 export function actions(store: Store<SecretState>): Actions {
   return {
-    updatePage(page, id) {
-      return { page, pageId: id };
-    },
-
     async saveMessage(message, passphrase, ttlHours) {
       store.setState({ progress: 0 });
       const encrypted = await encrypt(message, passphrase, percent =>
@@ -60,23 +56,30 @@ export function actions(store: Store<SecretState>): Actions {
         expires = d.getTime();
       }
       const envelope = {
+        created: Date.now(),
         encrypted,
         expires,
         id: hashids.encode(Date.now())
       };
 
-      console.log("ENVELOPE", envelope);
-
       try {
-        await writeKv(envelope.id, envelope);
+        await writeVal(envelope.id, envelope);
       } catch (err) {
-        // TODO: update error message in store and display it
-        console.log(err);
+        console.error(err);
+        return {
+          saveError:
+            "There was a problem saving your message, please try again."
+        };
       }
-
-      // TODO: dispatch route update to share page
-
       return { envelope };
+    },
+
+    clearMessage() {
+      store.setState({
+        envelope: undefined,
+        progress: 0,
+        saveError: undefined
+      });
     }
   };
 }

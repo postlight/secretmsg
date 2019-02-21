@@ -1,36 +1,33 @@
 import { h, Component } from "preact";
 import { connect } from "unistore/preact";
-import { actions, SecretState, MsgSaver } from "../store";
+import { actions, SecretState, MsgSaver, MsgEnvelope } from "../store";
 import { Wrapper } from "./wrapper";
-import { SaveOverlay } from "./save-overlay";
+import { EncryptInputs } from "./encrypt-inputs";
+import { ShareOverlay } from "./share-overlay";
 
 interface Props {
   saveMessage: MsgSaver;
+  clearMessage: () => void;
+  envelope?: MsgEnvelope;
 }
 
 interface State {
   message: string;
   passphrase: string;
   expiration: number;
-  saving: boolean;
 }
 
 class WriteComp extends Component<Props, State> {
   state = {
     message: "",
     passphrase: "",
-    expiration: 0,
-    saving: false
+    expiration: 0
   };
 
   handleInput = (e: Event) => {
     if (e.target) {
       this.setState({ message: (e.target as HTMLFormElement).value });
     }
-  };
-
-  handleStartSaving = () => {
-    this.setState({ saving: true });
   };
 
   handlePassChange = (passphrase: string) => this.setState({ passphrase });
@@ -46,8 +43,15 @@ class WriteComp extends Component<Props, State> {
     );
   };
 
+  handleClear = (e: Event) => {
+    e.preventDefault();
+    this.setState({ message: "", passphrase: "", expiration: 0 });
+    this.props.clearMessage();
+  };
+
   render() {
-    const { saving, message, passphrase, expiration } = this.state;
+    const { envelope } = this.props;
+    const { message, passphrase, expiration } = this.state;
     return (
       <Wrapper>
         <form onSubmit={this.handleSubmit}>
@@ -55,29 +59,30 @@ class WriteComp extends Component<Props, State> {
             <textarea
               autofocus
               class={`db w-100 mw-100 pa3 bn lh-copy input-reset ${
-                saving ? "black-10" : ""
+                envelope ? "black-10" : ""
               }`}
               id="msginput"
               onInput={this.handleInput}
               rows={10}
               value={message}
             />
-            {saving && (
-              <SaveOverlay
-                passphrase={passphrase}
-                expiration={expiration}
-                onPassChange={this.handlePassChange}
-                onExpireChange={this.handleExpireChange}
-              />
-            )}
+            {envelope && <ShareOverlay id={envelope.id} />}
           </div>
-          {!saving && (
-            <button
-              class="db ml-auto pv2 ph3 button-reset bn br2 bg-black hover-bg-white white hover-black fw5 f6"
-              onClick={this.handleStartSaving}
+          {!envelope ? (
+            <EncryptInputs
+              passphrase={passphrase}
+              expiration={expiration}
+              onPassChange={this.handlePassChange}
+              onExpireChange={this.handleExpireChange}
+            />
+          ) : (
+            <a
+              class="db link underline-hover blue f5 tc"
+              href="/"
+              onClick={this.handleClear}
             >
-              Encrypt message
-            </button>
+              Write new message
+            </a>
           )}
         </form>
       </Wrapper>
@@ -86,6 +91,6 @@ class WriteComp extends Component<Props, State> {
 }
 
 export const Write = connect<{}, State, SecretState, Props>(
-  [],
+  ["envelope"],
   actions
 )(WriteComp);
