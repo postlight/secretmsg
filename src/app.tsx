@@ -1,18 +1,20 @@
 import { h, render } from "preact";
 import { render as renderToString } from "preact-render-to-string";
 import { initStore } from "./store";
-import { initRouter } from "./router";
+import { Router } from "./router";
 import { Root } from "./components/root";
 
 export function run(path: string) {
-  const route = initRouter(path);
+  const router = new Router();
+  const route = router.match(path);
   const store = initStore({ page: route.page, pageId: route.id });
   render(<Root store={store} />, document.body, document.body
     .firstElementChild as Element | undefined);
 }
 
 export function htmlString(path: string) {
-  const route = initRouter(path);
+  const router = new Router();
+  const route = router.match(path);
   const store = initStore({ page: route.page, pageId: route.id });
   return renderToString(<Root store={store} />);
 }

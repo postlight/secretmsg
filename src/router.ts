@@ -12,28 +12,28 @@ interface Route {
   id?: string;
 }
 
-let router;
-export function initRouter(path: string): Route {
-  router = new RouteRecognizer();
-  router.add([{ path: "/", handler: Page.Index }]);
-  router.add([{ path: "/:id/share", handler: Page.Share }]);
-  router.add([{ path: "/:id", handler: Page.View }]);
-  const results = router.recognize(path);
-  const notFound = {
-    page: Page.NotFound
-  };
+export class Router {
+  private matcher: RouteRecognizer;
 
-  if (results === undefined) {
-    return notFound;
+  constructor() {
+    this.matcher = new RouteRecognizer();
+    this.matcher.add([{ path: "/", handler: Page.Index }]);
+    this.matcher.add([{ path: "/:id/share", handler: Page.Share }]);
+    this.matcher.add([{ path: "/:id", handler: Page.View }]);
   }
 
-  const result = results[0];
-  if (result === undefined) {
-    return notFound;
+  match(path: string): Route {
+    const results = this.matcher.recognize(path);
+    if (results == null) {
+      return { page: Page.NotFound };
+    }
+    const result = results[0];
+    if (result == null) {
+      return { page: Page.NotFound };
+    }
+    return {
+      page: result.handler as Page,
+      id: result.params.id as string
+    };
   }
-
-  return {
-    page: result.handler as Page,
-    id: result.params.id as string
-  };
 }
