@@ -15,7 +15,7 @@ interface State {
   saving: boolean;
 }
 
-class IndexComp extends Component<Props, State> {
+class WriteComp extends Component<Props, State> {
   state = {
     message: "",
     passphrase: "",
@@ -85,7 +85,7 @@ class IndexComp extends Component<Props, State> {
   }
 }
 
-export const Index = connect<{}, State, SecretState, Props>(
+export const Write = connect<{}, State, SecretState, Props>(
   [],
   actions
-)(IndexComp);
+)(WriteComp);

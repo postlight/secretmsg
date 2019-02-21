@@ -20,7 +20,7 @@ interface MsgEnvelope {
 let store;
 export function initStore(state: Partial<SecretState>) {
   store = createStore<SecretState>({
-    page: Page.Index,
+    page: Page.Write,
     progress: 0,
     ...state
   });

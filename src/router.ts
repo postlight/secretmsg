@@ -1,7 +1,7 @@
 import RouteRecognizer from "route-recognizer";
 
 export enum Page {
-  Index = "INDEX",
+  Write = "WRITE",
   Share = "SHARE",
   View = "VIEW",
   NotFound = "NOTFOUND"
@@ -17,7 +17,7 @@ export class Router {
 
   constructor() {
     this.matcher = new RouteRecognizer();
-    this.matcher.add([{ path: "/", handler: Page.Index }]);
+    this.matcher.add([{ path: "/", handler: Page.Write }]);
     this.matcher.add([{ path: "/:id/share", handler: Page.Share }]);
     this.matcher.add([{ path: "/:id", handler: Page.View }]);
   }
@@ -31,6 +31,8 @@ export class Router {
     if (result == null) {
       return { page: Page.NotFound };
     }
+    // TODO: handler needs to fetch data (if no data, return 404 notFound)
+    // TODO: also need a way to return status code
     return {
       page: result.handler as Page,
       id: result.params.id as string
