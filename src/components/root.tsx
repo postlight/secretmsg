@@ -5,6 +5,7 @@ import { SecretState } from "../store";
 import { Page } from "../router";
 import { Write } from "./write";
 import { View } from "./view";
+import { NotFound } from "./not-found";
 
 interface RootProps {
   store: Store<SecretState>;
@@ -16,12 +17,12 @@ export const Root: FunctionalComponent<RootProps> = ({ store }) => (
   </Provider>
 );
 
-const Content = connect<{}, {}, SecretState, SecretState>(["page", "pageId"])(
-  ({ page, pageId }) => {
+const Content = connect<{}, {}, SecretState, SecretState>(["page"])(
+  ({ page }) => {
     const routes = {
       [Page.Write]: <Write />,
       [Page.View]: <View />,
-      [Page.NotFound]: <div>not found</div>
+      [Page.NotFound]: <NotFound />
     };
     return routes[page];
   }
