@@ -1,0 +1,11 @@
+{
+  "body_part": "script",
+  "bindings": [
+    { "name": "CLIENT_HASH", "type": "secret_text", "text": "${TRUNC_HASH}" },
+    {
+      "name": "MSG_STORE",
+      "type": "kv_namespace",
+      "namespace_id": "41060c9679c24ce6a5424ae5e3870bb8"
+    }
+  ]
+}

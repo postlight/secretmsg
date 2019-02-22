@@ -26,7 +26,7 @@ cp -r css/ "${TMP}/css/"
 aws s3 cp .tmp/ "${BUCKET}/assets" --only-show-errors --recursive --exclude ".DS_Store" --acl public-read
 
 # set hash to env var on worker for rendering
-METADATA="{\"body_part\": \"script\", \"bindings\": [{\"name\": \"CLIENT_HASH\",\"type\": \"secret_text\",\"text\": \"${TRUNC_HASH}\"}]}"
+METADATA=$(sed -e "s/\${TRUNC_HASH}/$TRUNC_HASH/" worker-metadata.json)
 
 # update worker
 curl -s -X PUT "https://api.cloudflare.com/client/v4/zones/${ZONE_ID}/workers/script" \
