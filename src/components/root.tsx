@@ -4,6 +4,7 @@ import { Provider, connect } from "unistore/preact";
 import { SecretState } from "../store";
 import { Page } from "../router";
 import { Write } from "./write";
+import { View } from "./view";
 
 interface RootProps {
   store: Store<SecretState>;
@@ -19,7 +20,7 @@ const Content = connect<{}, {}, SecretState, SecretState>(["page", "pageId"])(
   ({ page, pageId }) => {
     const routes = {
       [Page.Write]: <Write />,
-      [Page.View]: <div>share {pageId}</div>,
+      [Page.View]: <View />,
       [Page.NotFound]: <div>not found</div>
     };
     return <div class="bg-black-05 flex-auto">{routes[page]}</div>;

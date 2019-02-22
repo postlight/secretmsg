@@ -1,7 +1,7 @@
 import createStore, { Store } from "unistore";
 import Hashids from "hashids";
 import { Page } from "./router";
-import { encrypt } from "./crypto";
+import { encrypt, decrypt } from "./crypto";
 import { writeVal } from "./kv";
 
 export interface SecretState {
@@ -10,6 +10,8 @@ export interface SecretState {
   envelope?: MsgEnvelope;
   progress: number;
   saveError?: string;
+  decrypted?: string;
+  decryptError?: string;
 }
 
 export interface MsgEnvelope {
@@ -29,14 +31,21 @@ export function initStore(state: Partial<SecretState>) {
   return store;
 }
 
-export type MsgSaver = (
-  message: string,
-  passphrase: string,
-  ttlHours: number
-) => Promise<Partial<SecretState>>;
+export interface MsgPayload {
+  message: string;
+  passphrase: string;
+  ttlHours: number;
+}
 
 interface Actions {
-  saveMessage: MsgSaver;
+  saveMessage: (
+    state: SecretState,
+    payload: MsgPayload
+  ) => Promise<Pick<SecretState, "envelope" | "saveError">>;
+  decryptMessage: (
+    state: SecretState,
+    passphrase: string
+  ) => Promise<Pick<SecretState, "decrypted" | "decryptError">>;
   clearMessage: () => void;
 }
 
@@ -44,7 +53,7 @@ const hashids = new Hashids(`${Math.random()}`);
 
 export function actions(store: Store<SecretState>): Actions {
   return {
-    async saveMessage(message, passphrase, ttlHours) {
+    async saveMessage(state, { message, passphrase, ttlHours }) {
       store.setState({ progress: 0 });
       const encrypted = await encrypt(message, passphrase, percent =>
         store.setState({ progress: percent })
@@ -74,12 +83,30 @@ export function actions(store: Store<SecretState>): Actions {
       return { envelope };
     },
 
+    async decryptMessage(state, passphrase) {
+      if (!state.envelope) {
+        return { decrypted: undefined };
+      }
+      store.setState({ progress: 0 });
+      try {
+        const decrypted = await decrypt(
+          state.envelope.encrypted,
+          passphrase,
+          percent => store.setState({ progress: percent })
+        );
+        return { decrypted };
+      } catch (err) {
+        console.error(err);
+        return { decryptError: "Wrong passphrase" };
+      }
+    },
+
     clearMessage() {
-      store.setState({
+      return {
         envelope: undefined,
         progress: 0,
         saveError: undefined
-      });
+      };
     }
   };
 }

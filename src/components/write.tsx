@@ -1,12 +1,12 @@
 import { h, Component } from "preact";
 import { connect } from "unistore/preact";
-import { actions, SecretState, MsgSaver, MsgEnvelope } from "../store";
+import { actions, SecretState, MsgPayload, MsgEnvelope } from "../store";
 import { Wrapper } from "./wrapper";
 import { EncryptInputs } from "./encrypt-inputs";
 import { ShareOverlay } from "./share-overlay";
 
 interface Props {
-  saveMessage: MsgSaver;
+  saveMessage: (payload: MsgPayload) => void;
   clearMessage: () => void;
   envelope?: MsgEnvelope;
 }
@@ -36,11 +36,11 @@ class WriteComp extends Component<Props, State> {
 
   handleSubmit = (e: Event) => {
     e.preventDefault();
-    this.props.saveMessage(
-      this.state.message,
-      this.state.passphrase,
-      this.state.expiration
-    );
+    this.props.saveMessage({
+      message: this.state.message,
+      passphrase: this.state.passphrase,
+      ttlHours: this.state.expiration
+    });
   };
 
   handleClear = (e: Event) => {
