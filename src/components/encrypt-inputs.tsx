@@ -36,7 +36,7 @@ export const EncryptInputs: FunctionalComponent<Props> = ({
           class="expire-select"
           value={expiration}
           onChange={(e: Event) =>
-            onExpireChange((e.target as HTMLFormElement).value)
+            onExpireChange(parseInt((e.target as HTMLFormElement).value))
           }
         >
           <option value={0}>Never expires</option>

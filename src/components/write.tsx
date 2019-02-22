@@ -9,6 +9,7 @@ interface Props {
   saveMessage: (payload: MsgPayload) => void;
   clearMessage: () => void;
   envelope?: MsgEnvelope;
+  progress: number;
 }
 
 interface State {
@@ -50,7 +51,7 @@ class WriteComp extends Component<Props, State> {
   };
 
   render() {
-    const { envelope } = this.props;
+    const { envelope, progress } = this.props;
     const { message, passphrase, expiration } = this.state;
     return (
       <Wrapper>
@@ -73,6 +74,12 @@ class WriteComp extends Component<Props, State> {
               rows={10}
               value={envelope ? envelope.encrypted : message}
             />
+            {!envelope && (
+              <div
+                class="progress-bar"
+                style={{ transform: `scaleX(${progress})` }}
+              />
+            )}
           </div>
           {!envelope ? (
             <EncryptInputs
@@ -82,7 +89,11 @@ class WriteComp extends Component<Props, State> {
               onExpireChange={this.handleExpireChange}
             />
           ) : (
-            <ShareOverlay id={envelope.id} />
+            <ShareOverlay
+              id={envelope.id}
+              timestamp={envelope.created}
+              expireTime={envelope.expires}
+            />
           )}
         </form>
       </Wrapper>
@@ -91,6 +102,6 @@ class WriteComp extends Component<Props, State> {
 }
 
 export const Write = connect<{}, State, SecretState, Props>(
-  ["envelope"],
+  ["envelope", "progress"],
   actions
 )(WriteComp);

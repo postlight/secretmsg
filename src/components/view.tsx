@@ -1,7 +1,9 @@
 import { h, Component } from "preact";
 import { connect } from "unistore/preact";
 import { actions, SecretState, MsgEnvelope } from "../store";
+import { formatDate, formatExpiration } from "../time";
 import { Wrapper } from "./wrapper";
+import { LockIcon } from "./icons";
 
 interface Props {
   envelope: MsgEnvelope;
@@ -10,6 +12,7 @@ interface Props {
   decryptMessage: (
     passphrase: string
   ) => Promise<Pick<SecretState, "decrypted" | "decryptError">>;
+  progress: number;
 }
 
 interface State {
@@ -32,7 +35,7 @@ class ViewComp extends Component<Props, State> {
 
   render() {
     const { passphrase } = this.state;
-    const { decrypted, envelope } = this.props;
+    const { decrypted, envelope, progress } = this.props;
     return (
       <Wrapper>
         {decrypted ? (
@@ -41,11 +44,13 @@ class ViewComp extends Component<Props, State> {
           </a>
         ) : (
           <form class="decrypt-inputs" onSubmit={this.handleSubmit}>
+            <LockIcon class="lock-icon" />
             <div class="pass-group">
               <label class="pass-label" for="pass-input">
                 Passphrase
               </label>
               <input
+                autofocus
                 autocomplete="off"
                 type="text"
                 id="pass-input"
@@ -65,10 +70,16 @@ class ViewComp extends Component<Props, State> {
         )}
         <div class={`view-msg ${decrypted ? "" : "encrypted"}`}>
           {decrypted ? decrypted : envelope.encrypted}
+          {!decrypted && (
+            <div
+              class="progress-bar"
+              style={{ transform: `scaleX(${progress})` }}
+            />
+          )}
         </div>
         <div class="meta">
-          <time class="share-date">TODO: Feb 21</time>
-          <div class="share-expire">TODO: Never expires</div>
+          <time class="share-date">{formatDate(envelope.created)}</time>
+          <div class="share-expire">{formatExpiration(envelope.expires)}</div>
         </div>
       </Wrapper>
     );
@@ -76,6 +87,6 @@ class ViewComp extends Component<Props, State> {
 }
 
 export const View = connect<{}, {}, SecretState, Props>(
-  ["envelope", "decrypted", "decryptError"],
+  ["envelope", "decrypted", "decryptError", "progress"],
   actions
 )(ViewComp);
