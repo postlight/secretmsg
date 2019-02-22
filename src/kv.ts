@@ -19,5 +19,10 @@ export async function getMessage(
   kv: KeyValueStore,
   key: string
 ): Promise<MsgEnvelope | null> {
-  return (await kv.get(key, "json")) as MsgEnvelope;
+  const envelope = (await kv.get(key, "json")) as MsgEnvelope;
+  if (envelope.expires !== 0 && envelope.expires < Date.now()) {
+    kv.delete(key);
+    return null;
+  }
+  return envelope;
 }

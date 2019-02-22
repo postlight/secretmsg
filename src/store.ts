@@ -61,7 +61,7 @@ export function actions(store: Store<SecretState>): Actions {
       let expires = 0;
       if (ttlHours > 0) {
         const d = new Date();
-        d.setHours(d.getHours() + 24);
+        d.setHours(d.getHours() + ttlHours);
         expires = d.getTime();
       }
       const envelope = {
