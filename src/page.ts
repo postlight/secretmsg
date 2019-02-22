@@ -1,6 +1,7 @@
 export function page(content: string, json: string, clientHash?: string) {
   const hash = clientHash ? `.${clientHash}` : "";
-  return `<html>
+  return `<!DOCTYPE html>
+<html lang="en">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
