@@ -5,5 +5,5 @@ interface Props {
 }
 
 export const Wrapper: FunctionalComponent<Props> = ({ children }) => (
-  <div class="center mw7 mw-none-m mt4 mt0-m sans-serif">{children}</div>
+  <div class="wrapper">{children}</div>
 );

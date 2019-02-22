@@ -35,34 +35,41 @@ class ViewComp extends Component<Props, State> {
     const { decrypted, envelope } = this.props;
     return (
       <Wrapper>
-        <div style={{ wordWrap: "break-word" }}>
-          {decrypted ? decrypted : envelope.encrypted}
-        </div>
         {decrypted ? (
-          <a class="db link underline-hover blue f5 tc" href="/">
-            Write new message
+          <a class="msg-input-label" href="/">
+            &larr; Write new message
           </a>
         ) : (
-          <form onSubmit={this.handleSubmit}>
-            <div class="mb2 w-100">
-              <label class="db f6 mb1">Passphrase</label>
+          <form class="decrypt-inputs" onSubmit={this.handleSubmit}>
+            <div class="pass-group">
+              <label class="pass-label" for="pass-input">
+                Passphrase
+              </label>
               <input
+                autocomplete="off"
                 type="text"
-                class="input-reset w-100 pa2 bn br2"
+                id="pass-input"
                 value={passphrase}
                 onInput={this.handlePassChange}
               />
             </div>
-            <div class="flex-auto flex justify-end">
+            <div class="submit-group">
               <input
-                class="db ml-auto pv2 ph3 bn br2 bg-black hover-bg-white white hover-black fw5 f6"
+                class="submit-btn btn"
                 disabled={passphrase.length < 2}
                 type="submit"
-                value="Save"
+                value="Decrypt message"
               />
             </div>
           </form>
         )}
+        <div class={`view-msg ${decrypted ? "" : "encrypted"}`}>
+          {decrypted ? decrypted : envelope.encrypted}
+        </div>
+        <div class="meta">
+          <time class="share-date">TODO: Feb 21</time>
+          <div class="share-expire">TODO: Never expires</div>
+        </div>
       </Wrapper>
     );
   }

@@ -23,6 +23,6 @@ const Content = connect<{}, {}, SecretState, SecretState>(["page", "pageId"])(
       [Page.View]: <View />,
       [Page.NotFound]: <div>not found</div>
     };
-    return <div class="bg-black-05 flex-auto">{routes[page]}</div>;
+    return routes[page];
   }
 );

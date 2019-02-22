@@ -55,18 +55,24 @@ class WriteComp extends Component<Props, State> {
     return (
       <Wrapper>
         <form onSubmit={this.handleSubmit}>
-          <div class="relative overflow-hidden br2 mb3">
+          <label class="msg-input-label" for="msg-input">
+            {!envelope ? (
+              "Message"
+            ) : (
+              <a href="/" onClick={this.handleClear}>
+                &larr; Write new message
+              </a>
+            )}
+          </label>
+          <div class="write-group">
             <textarea
               autofocus
-              class={`db w-100 mw-100 pa3 bn lh-copy input-reset ${
-                envelope ? "black-10" : ""
-              }`}
-              id="msginput"
+              disabled={!!envelope}
+              id="msg-input"
               onInput={this.handleInput}
               rows={10}
-              value={message}
+              value={envelope ? envelope.encrypted : message}
             />
-            {envelope && <ShareOverlay id={envelope.id} />}
           </div>
           {!envelope ? (
             <EncryptInputs
@@ -76,13 +82,7 @@ class WriteComp extends Component<Props, State> {
               onExpireChange={this.handleExpireChange}
             />
           ) : (
-            <a
-              class="db link underline-hover blue f5 tc"
-              href="/"
-              onClick={this.handleClear}
-            >
-              Write new message
-            </a>
+            <ShareOverlay id={envelope.id} />
           )}
         </form>
       </Wrapper>
