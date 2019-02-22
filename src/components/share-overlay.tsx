@@ -20,6 +20,25 @@ export const ShareOverlay: FunctionalComponent<Props> = ({
       <a class="share-link" href={`/${id}`}>{`secretmsg.app/${id}`}</a>
       <div class="share-expire">{formatExpiration(expireTime)}</div>
     </div>
-    <button class="copy-btn btn">Copy link</button>
+    <button
+      class="copy-btn btn"
+      onClick={copier(`https://secretmsg.app/${id}`)}
+    >
+      Copy link
+    </button>
   </div>
 );
+
+function copier(link: string) {
+  return (e: Event) => {
+    e.preventDefault();
+    (navigator as any).clipboard.writeText(link).then(
+      function() {
+        console.log("COPIED!");
+      },
+      function() {
+        console.log("FAILED :(");
+      }
+    );
+  };
+}
