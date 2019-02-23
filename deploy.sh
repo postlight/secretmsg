@@ -21,6 +21,7 @@ rm -rf .tmp
 hash "dist" "client.js"
 cp -r  js/ "${TMP}/js/"
 cp -r css/ "${TMP}/css/"
+cp -r images/ "${TMP}/images/"
 
 # push assets to s3
 aws s3 cp .tmp/ "${BUCKET}/assets" --only-show-errors --recursive --exclude ".DS_Store" --acl public-read
