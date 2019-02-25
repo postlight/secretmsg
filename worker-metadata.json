@@ -5,7 +5,7 @@
     {
       "name": "MSG_STORE",
       "type": "kv_namespace",
-      "namespace_id": "41060c9679c24ce6a5424ae5e3870bb8"
+      "namespace_id": "${KV_NAMESPACE}"
     }
   ]
 }
