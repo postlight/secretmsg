@@ -18,12 +18,11 @@ export const Root: FunctionalComponent<RootProps> = ({ store }) => (
 );
 
 const Content = connect<{}, {}, SecretState, SecretState>(["page"])(
-  ({ page }) => {
-    const routes = {
-      [Page.Write]: <Write />,
-      [Page.View]: <View />,
-      [Page.NotFound]: <NotFound />
-    };
-    return routes[page];
-  }
+  ({ page }) => routes[page]
 );
+
+const routes = {
+  [Page.Write]: <Write />,
+  [Page.View]: <View />,
+  [Page.NotFound]: <NotFound />
+};
