@@ -9,6 +9,10 @@ addEventListener("fetch", (e: Event) => {
 });
 
 async function handleRequest(req: Request) {
+  if (MSG_STORE == null) {
+    return new Response("No KV store bound to worker", { status: 500 });
+  }
+
   const url = new URL(req.url);
   const segments = url.pathname.split("/");
 
@@ -17,7 +21,13 @@ async function handleRequest(req: Request) {
     return fetch(req);
   }
 
-  // Then check if saving message -- /save/:key
+  // Check for favicon request and fetch from static assets
+  if (segments[1] === "favicon.ico") {
+    url.pathname = "/assets/images/favicon.ico";
+    return fetch(url.toString());
+  }
+
+  // Check if saving message -- /save/:key
   if (
     segments[1] &&
     segments[2] &&
@@ -35,10 +45,7 @@ async function handleRequest(req: Request) {
     }
   }
 
-  // If not, render page
-  if (MSG_STORE == null) {
-    return new Response("No KV store bound to worker", { status: 500 });
-  }
+  // Render page
   const { status, data, html } = await htmlString(url.pathname, MSG_STORE);
   return new Response(page(html, JSON.stringify(data), CLIENT_HASH), {
     status,
