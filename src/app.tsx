@@ -5,7 +5,8 @@ import { route } from "./router";
 import { KeyValueStore } from "./worker";
 import { Root } from "./components/root";
 
-export function run(path: string) {
+// Client-side starting point
+export function run() {
   const node = document.getElementById("bootstrap");
   if (node && node.textContent) {
     const data = JSON.parse(node.textContent);
@@ -15,6 +16,7 @@ export function run(path: string) {
   }
 }
 
+// Used by worker to render page
 export async function htmlString(path: string, kv: KeyValueStore) {
   const { status, data } = await route(path, kv);
   const store = initStore(data);
