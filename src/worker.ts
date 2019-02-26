@@ -18,7 +18,11 @@ async function handleRequest(req: Request) {
 
   // First, check if request is for static asset -- /assets/js/client.js
   if (segments[1] && segments[1] === "assets") {
-    return fetch(req);
+    // fetch from s3 and add cache header
+    const assetRes = await fetch(req);
+    const response = new Response(assetRes.body, assetRes);
+    response.headers.set("cache-control", "public, max-age=31536000");
+    return response;
   }
 
   // Check for favicon request and fetch from static assets
