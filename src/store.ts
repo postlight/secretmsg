@@ -94,7 +94,7 @@ export function actions(store: Store<SecretState>): Actions {
           passphrase,
           percent => store.setState({ progress: percent })
         );
-        return { decrypted };
+        return { decrypted, decryptError: undefined };
       } catch (err) {
         console.error(err);
         return { decryptError: "Wrong passphrase" };

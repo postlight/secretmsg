@@ -35,7 +35,7 @@ class ViewComp extends Component<Props, State> {
 
   render() {
     const { passphrase } = this.state;
-    const { decrypted, envelope, progress } = this.props;
+    const { decrypted, envelope, progress, decryptError } = this.props;
     return (
       <Wrapper>
         {decrypted ? (
@@ -54,6 +54,7 @@ class ViewComp extends Component<Props, State> {
                 autocomplete="off"
                 type="text"
                 id="pass-input"
+                class={decryptError ? "error" : ""}
                 value={passphrase}
                 onInput={this.handlePassChange}
               />
@@ -68,6 +69,7 @@ class ViewComp extends Component<Props, State> {
             </div>
           </form>
         )}
+        {decryptError && <div class="decrypt-error">{decryptError}</div>}
         <div class={`view-msg ${decrypted ? "" : "encrypted"}`}>
           {decrypted ? decrypted : envelope.encrypted}
           {!decrypted && (
