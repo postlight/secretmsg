@@ -6,28 +6,33 @@ TMP=".tmp"
 npm install
 npm run build
 
+# pass: "location folder" "destination folder" "filename"
 hash () {
-  local FOLDER="${TMP}/js"
-  local FILENAME="${2%.*}"
-  local EXT="${2##*.}"
-  local HASH=$(md5 -q "${1}/${2}")
-  TRUNC_HASH=${HASH:0:10}
+  local FOLDER="${TMP}/${2}"
+  local FILENAME="${3%.*}"
+  local EXT="${3##*.}"
+  local HASH=$(md5 -q "${1}/${3}")
+  local TRUNC_HASH=${HASH:0:10}
   mkdir -p $FOLDER
-  cp "${1}/${2}" "${FOLDER}/${FILENAME}.${TRUNC_HASH}.${EXT}"
+  cp "${1}/${3}" "${FOLDER}/${FILENAME}.${TRUNC_HASH}.${EXT}"
+  echo "$TRUNC_HASH"
 }
 
 # prep assets
 rm -rf .tmp
-hash "dist" "client.js"
+JS_HASH=$(hash "dist" "js" "client.js")
+CSS_HASH=$(hash "css" "css" "secret.css")
 cp -r  js/ "${TMP}/js/"
-cp -r css/ "${TMP}/css/"
 cp -r images/ "${TMP}/images/"
 
 # push assets to s3
 aws s3 cp .tmp/ "${BUCKET}/assets" --only-show-errors --recursive --exclude ".DS_Store" --acl public-read
 
 # set hash to env var on worker for rendering
-METADATA=$(sed -e "s/\${TRUNC_HASH}/$TRUNC_HASH/" -e "s/\${KV_NAMESPACE}/$KV_NAMESPACE/" worker-metadata.json)
+METADATA=$(sed -e "s/\${JS_HASH}/$JS_HASH/" \
+               -e "s/\${CSS_HASH}/$CSS_HASH/" \
+               -e "s/\${KV_NAMESPACE}/$KV_NAMESPACE/" \
+               worker-metadata.json)
 
 # update worker
 curl -s -X PUT "https://api.cloudflare.com/client/v4/zones/${ZONE_ID}/workers/script" \

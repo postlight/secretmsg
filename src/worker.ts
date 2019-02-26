@@ -51,15 +51,19 @@ async function handleRequest(req: Request) {
 
   // Render page
   const { status, data, html } = await htmlString(url.pathname, MSG_STORE);
-  return new Response(page(html, JSON.stringify(data), CLIENT_HASH), {
-    status,
-    headers: {
-      "content-type": "text/html; charset=utf-8"
+  return new Response(
+    page(html, JSON.stringify(data), CLIENT_HASH, STYLE_HASH),
+    {
+      status,
+      headers: {
+        "content-type": "text/html; charset=utf-8"
+      }
     }
-  });
+  );
 }
 
 declare const CLIENT_HASH: string | undefined;
+declare const STYLE_HASH: string | undefined;
 declare const MSG_STORE: KeyValueStore | undefined;
 type ValidType = "text" | "json" | "arrayBuffer" | "stream";
 export declare class KeyValueStore {

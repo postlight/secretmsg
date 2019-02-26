@@ -1,7 +1,16 @@
 {
   "body_part": "script",
   "bindings": [
-    { "name": "CLIENT_HASH", "type": "secret_text", "text": "${TRUNC_HASH}" },
+    {
+      "name": "CLIENT_HASH",
+      "type": "secret_text",
+      "text": "${JS_HASH}"
+    },
+    {
+      "name": "STYLE_HASH",
+      "type": "secret_text",
+      "text": "${CSS_HASH}"
+    },
     {
       "name": "MSG_STORE",
       "type": "kv_namespace",

@@ -44,6 +44,7 @@ function staticNotFound(res) {
 // values in worker-metadata.json
 const bindings = {
   CLIENT_HASH: null,
+  STYLE_HASH: null,
   MSG_STORE: new Cloudworker.KeyValueStore()
 };
 const workerPort = 3030;
