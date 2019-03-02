@@ -2,7 +2,6 @@
   "name": "secretmsg",
   "version": "1.0.0",
   "description": "shhh... it's a secret",
-  "main": "index.js",
   "scripts": {
     "build": "npm-run-all --silent --parallel build:*",
     "build:client": "parcel build --log-level 1 --public-url /assets/js src/client.ts",
@@ -17,6 +16,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "copy-to-clipboard": "3.0.8",
     "hashids": "1.2.2",
     "preact": "8.4.2",
     "preact-render-to-string": "4.1.0",

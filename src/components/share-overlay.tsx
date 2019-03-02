@@ -1,4 +1,5 @@
 import { h, FunctionalComponent } from "preact";
+import copy from "copy-to-clipboard";
 import { formatDate, formatExpiration } from "../time";
 import { LockIcon } from "./icons";
 
@@ -32,13 +33,6 @@ export const ShareOverlay: FunctionalComponent<Props> = ({
 function copier(link: string) {
   return (e: Event) => {
     e.preventDefault();
-    (navigator as any).clipboard.writeText(link).then(
-      function() {
-        console.log("COPIED!");
-      },
-      function() {
-        console.log("FAILED :(");
-      }
-    );
+    copy(link);
   };
 }
