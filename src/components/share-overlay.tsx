@@ -1,6 +1,6 @@
-import { h, FunctionalComponent } from "preact";
+import { h, FunctionalComponent, VNode } from "preact";
 import copy from "copy-to-clipboard";
-import { formatDate, formatExpiration } from "../time";
+import { formatDate, formatExpiration } from "../lib/time";
 import { LockIcon } from "./icons";
 
 interface Props {
@@ -13,7 +13,7 @@ export const ShareOverlay: FunctionalComponent<Props> = ({
   id,
   timestamp,
   expireTime
-}) => (
+}): VNode => (
   <div class="share-overlay">
     <LockIcon class="lock-icon" />
     <div class="share-info">
@@ -30,7 +30,7 @@ export const ShareOverlay: FunctionalComponent<Props> = ({
   </div>
 );
 
-function copier(link: string) {
+function copier(link: string): (e: Event) => void {
   return (e: Event) => {
     e.preventDefault();
     copy(link);

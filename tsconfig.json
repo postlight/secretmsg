@@ -2,24 +2,19 @@
   "compileOnSave": true,
   "compilerOptions": {
     "allowSyntheticDefaultImports": true,
-    "alwaysStrict": true,
     "jsx": "react",
     "jsxFactory": "h",
     "lib": ["es5", "es6", "es7", "dom", "webworker"],
-    "module": "esnext",
+    "module": "commonjs",
     "moduleResolution": "node",
     "noFallthroughCasesInSwitch": true,
     "noImplicitReturns": true,
     "noUnusedLocals": true,
     "pretty": true,
-    "rootDir": "src",
-    "sourceMap": true,
     "strict": true,
+    "sourceMap": true,
     "target": "es5",
-    "typeRoots": [
-      "node_modules/@types",
-      "src/@types"
-    ],
+    "typeRoots": ["node_modules/@types", "src/@types"]
   },
   "include": ["src/**/*"]
 }

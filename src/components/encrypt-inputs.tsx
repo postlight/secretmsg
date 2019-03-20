@@ -1,4 +1,4 @@
-import { h, FunctionalComponent } from "preact";
+import { h, FunctionalComponent, VNode } from "preact";
 import { UnlockIcon } from "./icons";
 
 interface Props {
@@ -13,7 +13,7 @@ export const EncryptInputs: FunctionalComponent<Props> = ({
   expiration,
   onPassChange,
   onExpireChange
-}) => (
+}): VNode => (
   <div class="encrypt-inputs-wrapper">
     <UnlockIcon class="unlock-icon" />
     <div class="encrypt-inputs">

@@ -1,69 +1,10 @@
-import { htmlString } from "./app";
 import { page } from "./page";
+import { match } from "./lib/request-match";
+import { serverRender } from "./app";
 
-addEventListener("fetch", (e: Event) => {
-  const fe = (<FetchEvent>e).request ? (e as FetchEvent) : null;
-  if (fe) {
-    fe.respondWith(handleRequest(fe.request));
-  }
-});
-
-async function handleRequest(req: Request) {
-  if (MSG_STORE == null) {
-    return new Response("No KV store bound to worker", { status: 500 });
-  }
-
-  const url = new URL(req.url);
-  const segments = url.pathname.split("/");
-
-  // First, check if request is for static asset -- /assets/js/client.js
-  if (segments[1] && segments[1] === "assets") {
-    // fetch from s3 and add cache header
-    const assetRes = await fetch(req);
-    const response = new Response(assetRes.body, assetRes);
-    response.headers.set("cache-control", "public, max-age=31536000");
-    return response;
-  }
-
-  // Check for favicon request and fetch from static assets
-  if (segments[1] === "favicon.ico") {
-    url.pathname = "/assets/images/favicon.ico";
-    return fetch(url.toString());
-  }
-
-  // Check if saving message -- /save/:key
-  if (
-    segments[1] &&
-    segments[2] &&
-    segments[1] === "save" &&
-    req.method === "POST" &&
-    MSG_STORE != null
-  ) {
-    const key = segments[2];
-    try {
-      const data = await req.text();
-      await MSG_STORE.put(key, data);
-      return new Response("OK");
-    } catch (err) {
-      return new Response("Error in post data", { status: 400 });
-    }
-  }
-
-  // Render page
-  const { status, data, html } = await htmlString(url.pathname, MSG_STORE);
-  return new Response(
-    page(html, JSON.stringify(data), CLIENT_HASH, STYLE_HASH),
-    {
-      status,
-      headers: {
-        "content-type": "text/html; charset=utf-8"
-      }
-    }
-  );
-}
-
-declare const CLIENT_HASH: string | undefined;
-declare const STYLE_HASH: string | undefined;
+// Worker bindings defined in metadata via build or env vars
+declare const JS_FILES: string | undefined;
+declare const CSS_FILES: string | undefined;
 declare const MSG_STORE: KeyValueStore | undefined;
 type ValidType = "text" | "json" | "arrayBuffer" | "stream";
 export declare class KeyValueStore {
@@ -77,4 +18,88 @@ export declare class KeyValueStore {
     value: string | ReadableStream | ArrayBuffer | FormData
   ): Promise<undefined>;
   delete(key: string): Promise<undefined>;
+}
+
+// Handle all requests hitting the worker
+addEventListener("fetch", (e: Event) => {
+  const fe = e as FetchEvent;
+  fe.respondWith(handleFetch(fe.request));
+});
+
+async function handleFetch(request: Request): Promise<Response> {
+  if (MSG_STORE == null) {
+    return new Response("No KV store bound to worker", { status: 500 });
+  }
+
+  // TODO: wrap individual routes with try catch
+
+  // Check if request is for static asset. If so, send request on to origin,
+  // then add a cache header to the response.
+  const staticRoute = match(request, "get", "/assets/*");
+  if (staticRoute) {
+    try {
+      const assetRes = await fetch(request);
+      const response = new Response(assetRes.body, assetRes);
+      response.headers.set("cache-control", "public, max-age=31536000");
+      return response;
+    } catch (err) {
+      return errorResponse(err, "Problems serving static assets");
+    }
+  }
+
+  // Check for favicon request and fetch from static assets
+  const faviconRoute = match(request, "get", "/favicon.ico");
+  if (faviconRoute) {
+    faviconRoute.url.pathname = "/assets/images/favicon.ico";
+    return fetch(faviconRoute.url.toString());
+  }
+
+  // Check if saving message -- /save/:key
+  const saveMsgRoute = match(request, "POST", "/save/:key");
+  if (saveMsgRoute) {
+    try {
+      const data = await request.text();
+      await MSG_STORE.put(saveMsgRoute.params.key, data);
+      return new Response("OK");
+    } catch (err) {
+      return new Response("Error in post data", { status: 400 });
+    }
+  }
+
+  // Render page
+
+  try {
+    let scripts;
+    let stylesheets;
+    const url = new URL(request.url);
+    const { status, data, html } = await serverRender(url.pathname, MSG_STORE);
+    if (JS_FILES) {
+      scripts = JS_FILES.split(" ");
+    }
+    if (CSS_FILES) {
+      stylesheets = CSS_FILES.split(" ");
+    }
+    const renderedPage = page({
+      title: "secretmsg",
+      content: html,
+      scripts,
+      stylesheets,
+      json: JSON.stringify(data)
+    });
+    return new Response(renderedPage, {
+      status,
+      headers: {
+        "content-type": "text/html; charset=utf-8"
+      }
+    });
+  } catch (err) {
+    return errorResponse(err, "Page rendering error");
+  }
+}
+
+function errorResponse(statusText: string, msg?: string) {
+  return new Response(msg || "Internal Server Error", {
+    status: 500,
+    statusText
+  });
 }

@@ -1,8 +1,8 @@
 import createStore, { Store } from "unistore";
 import Hashids from "hashids";
 import { Page } from "./router";
-import { encrypt, decrypt } from "./crypto";
-import { writeVal } from "./kv";
+import { encrypt, decrypt } from "./lib/crypto";
+import { writeVal } from "./lib/kv";
 
 export interface SecretState {
   page: Page;
@@ -22,7 +22,7 @@ export interface MsgEnvelope {
 }
 
 let store;
-export function initStore(state: Partial<SecretState>) {
+export function initStore(state: Partial<SecretState>): Store<SecretState> {
   store = createStore<SecretState>({
     page: Page.Write,
     progress: 0,

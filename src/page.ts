@@ -1,21 +1,37 @@
-export function page(
-  content: string,
-  json: string,
-  clientHash?: string,
-  styleHash?: string
-) {
-  const jsHash = clientHash ? `.${clientHash}` : "";
-  const cssHash = styleHash ? `.${styleHash}` : "";
+interface PageInit {
+  title: string;
+  content: string;
+  scripts?: string[];
+  stylesheets?: string[];
+  json?: string;
+}
+
+export function page({
+  title,
+  content,
+  scripts = [],
+  stylesheets = [],
+  json = ""
+}: PageInit): string {
+  const scriptTags = scripts
+    .map(script => `<script src="/assets/${script}" defer></script>`)
+    .join("\n");
+  const linkTags = stylesheets
+    .map(
+      sheet => `<link rel="stylesheet" type="text/css" href="/assets/${sheet}">`
+    )
+    .join("\n");
+
   return `<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>secretmsg</title>
+    <title>${title}</title>
     <script src="/assets/js/triplesec-3.0.27-min.js" defer></script>
-    <script src="/assets/js/client${jsHash}.js" defer></script>
-    <script type="application/json" id="bootstrap">${json}</script>
-    <link rel="stylesheet" type="text/css" href="/assets/css/secret${cssHash}.css">
+    ${scriptTags}
+    <script type="application/json" id="bootstrap-data">${json}</script>
+    ${linkTags}
   </head>
   <body>${content}</body>
 </html>`;

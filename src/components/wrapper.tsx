@@ -1,10 +1,10 @@
-import { h, FunctionalComponent, ComponentChildren } from "preact";
+import { h, FunctionalComponent, ComponentChildren, VNode } from "preact";
 
 interface Props {
   children?: ComponentChildren;
 }
 
-export const Wrapper: FunctionalComponent<Props> = ({ children }) => (
+export const Wrapper: FunctionalComponent<Props> = ({ children }): VNode => (
   <div>
     <div class="wrapper">{children}</div>
     <footer class="footer">

@@ -1,3 +1,13 @@
+const steps = [
+  "pbkdf2 (pass 1)",
+  "scrypt",
+  "pbkdf2 (pass 2)",
+  "salsa20",
+  "twofish",
+  "aes",
+  "HMAC-SHA512-SHA3"
+];
+
 export function encrypt(
   message: string,
   passphrase: string,
@@ -44,33 +54,4 @@ export function decrypt(
       }
     );
   });
-}
-
-const steps = [
-  "pbkdf2 (pass 1)",
-  "scrypt",
-  "pbkdf2 (pass 2)",
-  "salsa20",
-  "twofish",
-  "aes",
-  "HMAC-SHA512-SHA3"
-];
-
-// Just enough typing to wrap the external lib
-declare namespace triplesec {
-  const encrypt: (
-    options: TripleSecInput,
-    callback: (err: any, buff: any) => void
-  ) => void;
-  const decrypt: (
-    options: TripleSecInput,
-    callback: (err: any, buff: any) => void
-  ) => void;
-  const Buffer: any;
-}
-
-interface TripleSecInput {
-  data: any;
-  key: any;
-  progress_hook: (progress: { what: string; i: number; total: number }) => void;
 }

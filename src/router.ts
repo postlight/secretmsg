@@ -1,6 +1,6 @@
 import { SecretState } from "./store";
 import { KeyValueStore } from "./worker";
-import { getMessage } from "./kv";
+import { getMessage } from "./lib/kv";
 
 export enum Page {
   Write = "WRITE",
@@ -8,7 +8,7 @@ export enum Page {
   NotFound = "NOTFOUND"
 }
 
-interface Route {
+export interface Route {
   status: number;
   data: Pick<SecretState, "page" | "pageId" | "envelope">;
 }

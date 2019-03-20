@@ -1,4 +1,4 @@
-import { h, FunctionalComponent } from "preact";
+import { h, FunctionalComponent, VNode } from "preact";
 
 interface IconProps {
   class?: string;
@@ -8,7 +8,7 @@ interface IconProps {
 export const LockIcon: FunctionalComponent<IconProps> = ({
   class: className = "",
   scale = 1
-}) => (
+}): VNode => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width="24"
@@ -27,7 +27,7 @@ export const LockIcon: FunctionalComponent<IconProps> = ({
 export const UnlockIcon: FunctionalComponent<IconProps> = ({
   class: className = "",
   scale = 1
-}) => (
+}): VNode => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width="24"

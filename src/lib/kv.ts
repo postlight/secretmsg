@@ -1,8 +1,9 @@
-import { KeyValueStore } from "./worker";
-import { MsgEnvelope } from "./store";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { KeyValueStore } from "../worker";
+import { MsgEnvelope } from "../store";
 
 // Send encrypted message from client to worker, where it is saved to KV
-export async function writeVal(key: string, val: any) {
+export async function writeVal(key: string, val: any): Promise<Response> {
   const res = await fetch(`/save/${key}`, {
     method: "POST",
     headers: {

@@ -1,4 +1,4 @@
-export function formatDate(timestamp: number) {
+export function formatDate(timestamp: number): string {
   const d = new Date(timestamp);
   return d.toLocaleString("en-gb", {
     month: "short",
@@ -7,7 +7,7 @@ export function formatDate(timestamp: number) {
   });
 }
 
-export function formatExpiration(timestamp: number) {
+export function formatExpiration(timestamp: number): string {
   if (timestamp === 0) return "Never expires";
   const secDiff = (timestamp - Date.now()) / 1000;
   if (secDiff < 7200) {

@@ -1,4 +1,4 @@
-import { h, Component } from "preact";
+import { h, Component, ComponentChild } from "preact";
 import { connect } from "unistore/preact";
 import { actions, SecretState, MsgPayload, MsgEnvelope } from "../store";
 import { Wrapper } from "./wrapper";
@@ -19,23 +19,27 @@ interface State {
 }
 
 class WriteComp extends Component<Props, State> {
-  state = {
+  public readonly state = {
     message: "",
     passphrase: "",
     expiration: 0
   };
 
-  handleInput = (e: Event) => {
+  private handleInput = (e: Event) => {
     if (e.target) {
       this.setState({ message: (e.target as HTMLFormElement).value });
     }
   };
 
-  handlePassChange = (passphrase: string) => this.setState({ passphrase });
+  private handlePassChange = (passphrase: string) => {
+    this.setState({ passphrase });
+  };
 
-  handleExpireChange = (expiration: number) => this.setState({ expiration });
+  private handleExpireChange = (expiration: number) => {
+    this.setState({ expiration });
+  };
 
-  handleSubmit = (e: Event) => {
+  private handleSubmit = (e: Event) => {
     e.preventDefault();
     this.props.saveMessage({
       message: this.state.message,
@@ -44,13 +48,13 @@ class WriteComp extends Component<Props, State> {
     });
   };
 
-  handleClear = (e: Event) => {
+  private handleClear = (e: Event) => {
     e.preventDefault();
     this.setState({ message: "", passphrase: "", expiration: 0 });
     this.props.clearMessage();
   };
 
-  render() {
+  public render(): ComponentChild {
     const { envelope, progress } = this.props;
     const { message, passphrase, expiration } = this.state;
     return (

@@ -1,7 +1,7 @@
-import { h, Component } from "preact";
+import { h, Component, ComponentChild } from "preact";
 import { connect } from "unistore/preact";
 import { actions, SecretState, MsgEnvelope } from "../store";
-import { formatDate, formatExpiration } from "../time";
+import { formatDate, formatExpiration } from "../lib/time";
 import { Wrapper } from "./wrapper";
 import { LockIcon } from "./icons";
 
@@ -20,20 +20,20 @@ interface State {
 }
 
 class ViewComp extends Component<Props, State> {
-  state = {
+  public readonly state = {
     passphrase: ""
   };
 
-  handlePassChange = (e: Event) => {
+  private handlePassChange = (e: Event) => {
     this.setState({ passphrase: (e.target as HTMLFormElement).value });
   };
 
-  handleSubmit = (e: Event) => {
+  private handleSubmit = (e: Event) => {
     e.preventDefault();
     this.props.decryptMessage(this.state.passphrase);
   };
 
-  render() {
+  public render(): ComponentChild {
     const { passphrase } = this.state;
     const { decrypted, envelope, progress, decryptError } = this.props;
     return (
