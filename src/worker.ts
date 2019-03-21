@@ -3,21 +3,29 @@ import { match } from "./lib/request-match";
 import { serverRender } from "./app";
 
 // Worker bindings defined in metadata via build or env vars
+/* eslint-disable @typescript-eslint/ban-types */
 declare const JS_FILES: string | undefined;
 declare const CSS_FILES: string | undefined;
 declare const MSG_STORE: KeyValueStore | undefined;
 type ValidType = "text" | "json" | "arrayBuffer" | "stream";
 export declare class KeyValueStore {
-  constructor();
-  get(
+  public constructor();
+  public get(
     key: string,
     type?: ValidType
   ): Promise<string | ArrayBuffer | Object | ReadableStream>;
-  put(
+  public put(
     key: string,
     value: string | ReadableStream | ArrayBuffer | FormData
   ): Promise<undefined>;
-  delete(key: string): Promise<undefined>;
+  public delete(key: string): Promise<undefined>;
+}
+/* eslint-enable @typescript-eslint/ban-types */
+
+// CF Worker's version of CacheStorage is a little different
+interface CfCacheStorage extends CacheStorage {
+  default: CacheStorage;
+  put: (request: Request, response: Response) => void;
 }
 
 // Handle all requests hitting the worker
@@ -67,8 +75,13 @@ async function handleFetch(request: Request): Promise<Response> {
   }
 
   // Render page
-
   try {
+    const cache = (caches as CfCacheStorage).default;
+    const cachedResponse = await cache.match(request);
+    if (cachedResponse) {
+      return cachedResponse;
+    }
+
     let scripts;
     let stylesheets;
     const url = new URL(request.url);
@@ -86,18 +99,20 @@ async function handleFetch(request: Request): Promise<Response> {
       stylesheets,
       json: JSON.stringify(data)
     });
-    return new Response(renderedPage, {
+    const response = new Response(renderedPage, {
       status,
       headers: {
         "content-type": "text/html; charset=utf-8"
       }
     });
+    (cache as CfCacheStorage).put(request, response);
+    return response;
   } catch (err) {
     return errorResponse(err, "Page rendering error");
   }
 }
 
-function errorResponse(statusText: string, msg?: string) {
+function errorResponse(statusText: string, msg?: string): Response {
   return new Response(msg || "Internal Server Error", {
     status: 500,
     statusText

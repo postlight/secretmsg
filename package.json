@@ -1,6 +1,6 @@
 {
   "name": "secretmsg",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Cloudflare Worker app for encrypting and decrypting messages",
   "author": "Postlight",
   "license": "MIT",
