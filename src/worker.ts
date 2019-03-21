@@ -39,8 +39,6 @@ async function handleFetch(request: Request): Promise<Response> {
     return new Response("No KV store bound to worker", { status: 500 });
   }
 
-  // TODO: wrap individual routes with try catch
-
   // Check if request is for static asset. If so, send request on to origin,
   // then add a cache header to the response.
   const staticRoute = match(request, "get", "/assets/*");
@@ -51,7 +49,7 @@ async function handleFetch(request: Request): Promise<Response> {
       response.headers.set("cache-control", "public, max-age=31536000");
       return response;
     } catch (err) {
-      return errorResponse(err, "Problems serving static assets");
+      return errorResponse(err);
     }
   }
 
@@ -92,6 +90,7 @@ async function handleFetch(request: Request): Promise<Response> {
     if (CSS_FILES) {
       stylesheets = CSS_FILES.split(" ");
     }
+
     const renderedPage = page({
       title: "secretmsg",
       content: html,
@@ -105,16 +104,14 @@ async function handleFetch(request: Request): Promise<Response> {
         "content-type": "text/html; charset=utf-8"
       }
     });
-    (cache as CfCacheStorage).put(request, response);
+    (cache as CfCacheStorage).put(request, response.clone());
     return response;
   } catch (err) {
-    return errorResponse(err, "Page rendering error");
+    return errorResponse(err);
   }
 }
 
-function errorResponse(statusText: string, msg?: string): Response {
-  return new Response(msg || "Internal Server Error", {
-    status: 500,
-    statusText
-  });
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function errorResponse(err: any): Response {
+  return new Response(err.stack || err, { status: 500 });
 }
