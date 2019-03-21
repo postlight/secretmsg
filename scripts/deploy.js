@@ -39,6 +39,9 @@ const bucket = process.env.BUCKET;
     const scriptPath = path.resolve(__dirname, "../dist", files.worker[0]);
     const script = fs.readFileSync(scriptPath, "utf8");
     updateWorker(script, metadataJson);
+
+    // finally, purge cache
+    purgeCache();
   } catch (err) {
     console.error(err);
   }
@@ -190,4 +193,20 @@ async function updateWorker(script, metadataJson) {
   } catch (err) {
     console.error("Worker deploy to CF failed:", err);
   }
+}
+
+function purgeCache() {
+  const cfApi = "https://api.cloudflare.com/client/v4";
+  const zoneId = process.env.CF_ZONE_ID;
+  const email = process.env.CF_EMAIL;
+  const key = process.env.CF_KEY;
+
+  fetch(`${cfApi}/zones/${zoneId}/purge_cache`, {
+    method: "POST",
+    body: JSON.stringify({ purge_everything: true }),
+    headers: {
+      "X-Auth-Email": email,
+      "X-Auth-Key": key
+    }
+  });
 }
