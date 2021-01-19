@@ -21,7 +21,7 @@ interface State {
 
 class ViewComp extends Component<Props, State> {
   public readonly state = {
-    passphrase: ""
+    passphrase: "",
   };
 
   private handlePassChange = (e: Event) => {
@@ -31,6 +31,7 @@ class ViewComp extends Component<Props, State> {
   private handleSubmit = (e: Event) => {
     e.preventDefault();
     this.props.decryptMessage(this.state.passphrase);
+    gtag("event", "decrypt_message");
   };
 
   public render(): ComponentChild {

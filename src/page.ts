@@ -11,14 +11,15 @@ export function page({
   content,
   scripts = [],
   stylesheets = [],
-  json = ""
+  json = "",
 }: PageInit): string {
   const scriptTags = scripts
-    .map(script => `<script src="/assets/${script}" defer></script>`)
+    .map((script) => `<script src="/assets/${script}" defer></script>`)
     .join("\n");
   const linkTags = stylesheets
     .map(
-      sheet => `<link rel="stylesheet" type="text/css" href="/assets/${sheet}">`
+      (sheet) =>
+        `<link rel="stylesheet" type="text/css" href="/assets/${sheet}">`
     )
     .join("\n");
 
@@ -33,6 +34,14 @@ export function page({
     ${scriptTags}
     <script type="application/json" id="bootstrap-data">${json}</script>
     ${linkTags}
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-GJ9GC16D79"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-GJ9GC16D79');
+    </script>
   </head>
   <body>${content}</body>
 </html>`;
