@@ -40,7 +40,7 @@ export function page({
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-      gtag('config', 'G-GJ9GC16D79', {'debug_mode':true});
+      gtag('config', 'G-GJ9GC16D79');
     </script>
   </head>
   <body>${content}</body>
