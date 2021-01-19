@@ -8,6 +8,10 @@ A [Cloudflare Workers](https://www.cloudflare.com/products/cloudflare-workers/) 
 
 All the cryptography is done in the browser using [Triplesec](https://keybase.io/triplesec). A library made by the folks at [Keybase](https://keybase.io/). They do publish an npm module for Node.js. Unfortunately, that doesn't include the browser version of the library, so I've included the latest release [in the repo](assets/js/).
 
+## Requirements
+
+Node.js v10 is required to run this project. If you use [Volta](https://volta.sh), the version has been pinned in the package.json file.
+
 ## Scripts
 
 ```bash
