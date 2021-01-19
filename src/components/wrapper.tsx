@@ -9,7 +9,10 @@ export const Wrapper: FunctionalComponent<Props> = ({ children }): VNode => (
     <div class="wrapper">{children}</div>
     <footer class="footer">
       <p>A Labs project from your friends at</p>
-      <a href="https://postlight.com/careers">
+      <a
+        href="https://postlight.com/careers"
+        onMouseDown={() => gtag("event", "career_link")}
+      >
         <svg
           width="194"
           height="50"

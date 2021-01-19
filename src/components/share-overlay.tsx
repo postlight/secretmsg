@@ -12,13 +12,17 @@ interface Props {
 export const ShareOverlay: FunctionalComponent<Props> = ({
   id,
   timestamp,
-  expireTime
+  expireTime,
 }): VNode => (
   <div class="share-overlay">
     <LockIcon class="lock-icon" />
     <div class="share-info">
       <time class="share-date">{formatDate(timestamp)}</time>
-      <a class="share-link" href={`/${id}`}>{`secretmsg.app/${id}`}</a>
+      <a
+        class="share-link"
+        href={`/${id}`}
+        onMouseDown={() => gtag("event", "share_link")}
+      >{`secretmsg.app/${id}`}</a>
       <div class="share-expire">{formatExpiration(expireTime)}</div>
     </div>
     <button
@@ -31,6 +35,7 @@ export const ShareOverlay: FunctionalComponent<Props> = ({
 );
 
 function copier(link: string): (e: Event) => void {
+  gtag("event", "copy_link");
   return (e: Event) => {
     e.preventDefault();
     copy(link);

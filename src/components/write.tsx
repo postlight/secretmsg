@@ -22,7 +22,7 @@ class WriteComp extends Component<Props, State> {
   public readonly state = {
     message: "",
     passphrase: "",
-    expiration: 0
+    expiration: 0,
   };
 
   private handleInput = (e: Event) => {
@@ -37,14 +37,16 @@ class WriteComp extends Component<Props, State> {
 
   private handleExpireChange = (expiration: number) => {
     this.setState({ expiration });
+    gtag("event", "change_expiration");
   };
 
   private handleSubmit = (e: Event) => {
     e.preventDefault();
+    gtag("event", "encrypt_message");
     this.props.saveMessage({
       message: this.state.message,
       passphrase: this.state.passphrase,
-      ttlHours: this.state.expiration
+      ttlHours: this.state.expiration,
     });
   };
 
