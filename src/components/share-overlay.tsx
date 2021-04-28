@@ -1,5 +1,5 @@
 import { h, FunctionalComponent, VNode } from "preact";
-import copy from "copy-to-clipboard";
+import * as copy from "copy-to-clipboard";
 import { formatDate, formatExpiration } from "../lib/time";
 import { LockIcon } from "./icons";
 
@@ -35,9 +35,9 @@ export const ShareOverlay: FunctionalComponent<Props> = ({
 );
 
 function copier(link: string): (e: Event) => void {
-  gtag("event", "copy_link");
   return (e: Event) => {
     e.preventDefault();
+    gtag("event", "copy_link");
     copy(link);
   };
 }
