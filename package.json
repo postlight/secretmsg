@@ -27,7 +27,7 @@
     "@typescript-eslint/eslint-plugin": "1.4.2",
     "@typescript-eslint/parser": "1.4.2",
     "acorn": "6.1.1",
-    "async": "2.6.2",
+    "async": "3.2.2",
     "aws-sdk": "2.424.0",
     "cross-spawn": "6.0.5",
     "css-loader": "2.1.1",
