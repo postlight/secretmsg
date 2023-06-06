@@ -1,4 +1,4 @@
-## [secretmsg.app](https://secretmsg.app)
+## secretmsg
 
 A [Cloudflare Workers](https://www.cloudflare.com/products/cloudflare-workers/) and [Workers KV](https://www.cloudflare.com/products/workers-kv/) demo that encrypts messages in the browser and stores them in a global key-value store for easy sharing.
 
